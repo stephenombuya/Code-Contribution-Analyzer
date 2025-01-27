@@ -40,6 +40,7 @@ code-contribution-analyzer/
 │   └── reports/                 # Generated reports (CSV, JSON, PDF, etc.)
 ├── .env                         # Environment variables (e.g., API keys, secrets)
 ├── requirements.txt             # Python dependencies
+├── CODE_OF_CONDUCT.md           # For ensuring utmost standards of professionalism are upheld
 ├── CONTRIBUTING.md              # Guidelines to be followed when contributing to the project
 ├── README.md                    # Project documentation
 ├── LICENSE                      # License for the project
