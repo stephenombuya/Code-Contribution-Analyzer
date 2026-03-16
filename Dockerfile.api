@@ -1,0 +1,29 @@
+FROM python:3.12-slim
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    gcc \
+    libpq-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Python deps first (layer cache)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# App source
+COPY . .
+
+# Create data dirs
+RUN mkdir -p data/repos data/reports
+
+# Non-root user
+RUN useradd -m -u 1001 appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 5000
+
+CMD ["gunicorn", "src.main:app", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120"]

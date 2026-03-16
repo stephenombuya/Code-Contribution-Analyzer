@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  :root {
+    --color-brand: #6366f1;
+    --color-brand-glow: rgba(99, 102, 241, 0.4);
+    --color-surface: #0f172a;
+    --color-surface-1: #1e293b;
+    --color-surface-2: #263148;
+    --color-border: rgba(148, 163, 184, 0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: #020617;
+    color: #f1f5f9;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.5); }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface-900 border border-slate-800/60 rounded-2xl;
+  }
+
+  .card-glass {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    @apply rounded-2xl;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-500
+           text-white font-medium rounded-xl transition-all duration-200
+           shadow-lg shadow-brand-900/40 hover:shadow-brand-600/30
+           active:scale-95 select-none;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-slate-300
+           hover:text-white hover:bg-slate-800/70 rounded-xl
+           transition-all duration-200 select-none;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .stat-card {
+    @apply card p-6 flex flex-col gap-1 hover:border-brand-500/30 transition-colors duration-200;
+  }
+
+  .input {
+    @apply w-full bg-surface-800 border border-slate-700/60 rounded-xl px-4 py-2.5
+           text-slate-100 placeholder-slate-500 text-sm
+           focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500/60
+           transition-all duration-200;
+  }
+
+  .shimmer-line {
+    @apply h-4 rounded-lg bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800
+           bg-[length:200%_100%] animate-shimmer;
+  }
+
+  .glow-dot {
+    @apply w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_2px_rgba(99,102,241,0.6)];
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-violet-400;
+  }
+
+  .border-gradient {
+    background: linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+      linear-gradient(135deg, #6366f1, #a78bfa) border-box;
+    border: 1px solid transparent;
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .animate-delay-100 { animation-delay: 100ms; }
+  .animate-delay-200 { animation-delay: 200ms; }
+  .animate-delay-300 { animation-delay: 300ms; }
+  .animate-delay-400 { animation-delay: 400ms; }
+}
