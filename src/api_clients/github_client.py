@@ -3,6 +3,7 @@ GitHub API v3 client.
 Supports both OAuth tokens and Personal Access Tokens.
 """
 from __future__ import annotations
+from cachetools import TTLCache
 
 import logging
 from typing import Any, Iterator
@@ -15,6 +16,13 @@ logger = logging.getLogger(__name__)
 class GitHubClient(BaseAPIClient):
     platform = "github"
     base_url = "https://api.github.com"
+
+    def __init__(self, access_token: str):
+        super().__init__(access_token)
+        self._commit_cache = TTLCache(
+            maxsize=100, 
+            ttl=3600,
+        )
 
     @property
     def auth_headers(self) -> dict[str, str]:
@@ -105,8 +113,37 @@ class GitHubClient(BaseAPIClient):
             logger.warning("Could not list commits for %s/%s: %s", owner, repo, exc)
             return []
 
-    def get_commit(self, owner: str, repo: str, sha: str) -> dict[str, Any]:
-        return self._get(f"/repos/{owner}/{repo}/commits/{sha}")
+    def get_commit(
+        self,
+        owner: str,
+        repo: str,
+        sha: str,
+    ) -> dict[str, Any]:
+        """
+        Fetch details for a single commit, including additions/deletions stats.
+        """
+        # Generate cache key
+        cache_key = f"{owner}/{repo}/{sha}"
+        
+        # Check cache first
+        if cache_key in self._commit_cache:
+            return self._commit_cache[cache_key]
+        
+        try:
+            # Fetch from API if not in cache
+            commit = self._get(f"/repos/{owner}/{repo}/commits/{sha}")
+            # Store in cache
+            self._commit_cache[cache_key] = commit
+            return commit
+        except Exception as exc:
+            logger.warning(
+                "Could not fetch commit %s for %s/%s: %s",
+                sha,
+                owner,
+                repo,
+                exc,
+            )
+            return {}
 
     def get_commit_stats(
         self, owner: str, repo: str, sha: str
