@@ -5,6 +5,8 @@ from a given platform client.
 """
 from __future__ import annotations
 
+from src.analysis.language_detector import detect_language
+
 import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -119,7 +121,7 @@ class ContributionAnalyzer:
                 total_deletions += ra.user_deletions
                 for lang, info in ra.languages.items():
                     if isinstance(info, dict):
-                        language_totals[lang] += info.get("lines", 0)
+                        language_totals[lang] += info.get("net_lines", 0)
                     elif isinstance(info, (int, float)):
                         language_totals[lang] += int(info)
                 for ws in ra.weekly_stats:
@@ -139,6 +141,14 @@ class ContributionAnalyzer:
         top_repos = sorted(
             analyzed_repos, key=lambda r: r.get("user_commits", 0), reverse=True
         )[:10]
+
+        language_totals = dict(
+            sorted(
+                language_totals.items(),
+                key=lambda item: item[1],
+                reverse=True,
+            )
+        )
 
         return ContributionSummary(
             platform=self.platform,
@@ -165,9 +175,6 @@ class ContributionAnalyzer:
         owner, name = self._extract_owner_name(repo_data)
         logger.debug("Analyzing repo %s/%s on %s.", owner, name, self.platform)
 
-        # Languages
-        languages = self._get_languages(repo_data, owner, name)
-
         # Commits by this user
         commits = self.client.list_commits(
             owner, name, author=self.username, since=since, until=until
@@ -177,6 +184,8 @@ class ContributionAnalyzer:
         weekly: dict[str, dict[str, int]] = defaultdict(
             lambda: {"commits": 0, "additions": 0, "deletions": 0}
         )
+
+        language_changes = defaultdict(int)
 
         # Sample stats from first N commits (avoid hammering API on huge repos)
         sample_limit = min(len(commits), 200)
@@ -188,9 +197,17 @@ class ContributionAnalyzer:
             additions = deletions = 0
             # GitHub embeds stats in list_commits response
             if self.platform == "github":
-                stats = commit.get("stats", {})
-                additions = stats.get("additions", 0)
-                deletions = stats.get("deletions", 0)
+                stats = self.client.get_commit_stats(owner, name, sha)
+                for file in stats.get("files", []):
+                    filename = file["filename"]
+                    lang = detect_language(filename)
+
+                    if lang:
+                        language_changes[lang] += (
+                            file["additions"] - file["deletions"]
+                        )
+                additions = stats["additions"]
+                deletions = stats["deletions"]
             # GitLab embeds stats when with_stats=True
             elif self.platform == "gitlab":
                 stats = commit.get("stats", {})
@@ -205,6 +222,14 @@ class ContributionAnalyzer:
 
         weekly_list = [{"month": k, **v} for k, v in sorted(weekly.items())]
 
+        # Languages
+        languages = {
+            lang: {
+                "net_lines": net
+            }
+            for lang, net in language_changes.items()
+        }
+        
         return RepoAnalysis(
             platform=self.platform,
             owner=owner,
