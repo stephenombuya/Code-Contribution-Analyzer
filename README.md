@@ -1,15 +1,26 @@
 # Code Contribution Analyzer
 
-> **A production-grade, full-stack tool for analyzing your coding contributions across GitHub, GitLab, and Bitbucket — with interactive charts, PDF/CSV/JSON reports, OAuth2 authentication, and a CLI.**
+ **A production-grade, full-stack tool for analyzing your coding contributions across GitHub, GitLab, and Bitbucket — with interactive charts, PDF/CSV/JSON reports, OAuth2 authentication, and a CLI.**
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![React](https://img.shields.io/badge/react-18-61dafb)
 ![TypeScript](https://img.shields.io/badge/typescript-5-3178c6)
 
+<div>
+
+ <!-- Repository Analytics -->
+![GitHub repo size](https://img.shields.io/github/repo-size/stephenombuya/Code-Contribution-Analyzer)
+![GitHub language count](https://img.shields.io/github/languages/count/stephenombuya/Code-Contribution-Analyzer)
+![GitHub top language](https://img.shields.io/github/languages/top/stephenombuya/Code-Contribution-Analyzer)
+![GitHub last commit](https://img.shields.io/github/last-commit/stephenombuya/Code-Contribution-Analyzer)
+![GitHub contributors](https://img.shields.io/github/contributors/stephenombuya/Code-Contribution-Analyzer)
+
+</div>
+
 ---
 
-## ✨ Features
+##  Features
 
 | Feature | Details |
 |---|---|
